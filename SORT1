@@ -20,7 +20,7 @@ DPM1         6.050424     13.5694507     15.4628509     39.3473809
 SCYL3        0.000000      0.3534704      0.1464697      0.9101591
 
 countREt <- t(countRE)
-nameB <- read.csv("/Users/naoto/Library/Mobile Documents/com~apple~CloudDocs/Sortilin/GSE182622/datasheet.csv")
+nameB <- read.csv("/path/to/dir/datasheet.csv")
 countREt <- data.frame("Braak" = nameB$Braak[1:252], countREt)
 
 dev.new(width=5, height=4)
