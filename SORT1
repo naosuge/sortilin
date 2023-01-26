@@ -1,0 +1,44 @@
+# RNA-seq dataset was obtained from GEO datasets
+# GSE182622
+
+R
+library(tidyverse)
+countR <- read.delim("/path/to/dir/GSE182622_LCM_HS_Neuromelanin_Control_PD_ILBD_RPKM.txt")
+load("/Users/naoto/RSEM/hs_cells/alt.rda")
+countRE <- countR[,1:252]
+countRE <- rownames_to_column(countRE, "EID")
+countRE <- inner_join(alt, countRE, by =c("ensembl_gene_id" = "EID"))
+
+countRE <- distinct(countRE, countRE$hgnc_symbol, .keep_all = TRUE) 
+rownames(countRE) <- countRE$hgnc_symbol
+countRE <- countRE[,-c(1:2, ncol(countRE))]
+countRE[1:4,1:4]
+       DA.C.04.52.1.A DA.C.04.52.1.B DA.C.04.52.2.B DA.C.04.52.2.C
+TSPAN6      13.294811      9.4086034      2.7121388      9.9012361
+TNMD         0.000000      0.3383236      0.0000000      0.0000000
+DPM1         6.050424     13.5694507     15.4628509     39.3473809
+SCYL3        0.000000      0.3534704      0.1464697      0.9101591
+
+countREt <- t(countRE)
+nameB <- read.csv("/Users/naoto/Library/Mobile Documents/com~apple~CloudDocs/Sortilin/GSE182622/datasheet.csv")
+countREt <- data.frame("Braak" = nameB$Braak[1:252], countREt)
+
+dev.new(width=5, height=4)
+plot <- ggplot(countREt, aes(x = Braak, y = log2(SORT1), fill = Braak)) +
+        geom_boxplot() +
+        theme(
+            title=element_text(size =10),
+            legend.text=element_text(size =20), 
+            axis.text.x=element_text(size=15), 
+            axis.text.y=element_text(size=10), 
+            axis.title=element_text(size=15),
+            legend.position = "none") + 
+        labs(x="Braak staging", y="SORT1 (logRPKM)", title=NULL, colour =NULL) +
+        scale_fill_brewer(palette="Blues")
+plot
+dev.off()
+
+# One-way ANOVA
+res.aov <- aov(SORT1 ~ Braak, data = countREt)
+summary(res.aov)
+TukeyHSD(res.aov)
