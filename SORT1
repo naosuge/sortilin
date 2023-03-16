@@ -3,7 +3,7 @@
 
 R
 library(tidyverse)
-library(biomaRt)
+
 countR <- read.delim("/path/to/dir/GSE182622_LCM_HS_Neuromelanin_Control_PD_ILBD_RPKM.txt")
 countRD <- countR[,1:252]
 
